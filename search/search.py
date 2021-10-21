@@ -18,7 +18,6 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
-import numpy as np
 
 class SearchProblem:
     """
@@ -62,17 +61,36 @@ class SearchProblem:
         """
         util.raiseNotDefined()
 
+def tanslateToDirections(path):
+    solution = []
+    for i in range(len(path)-1):
+        path1 = path[i]
+        path2 = path[i+1]
+        if path1[0] > path2[0]:
+            solution.append("w")
+        elif path1[0] < path2[0]:
+            solution.append("e")
+        elif path1[1] > path2[1]:
+            solution.append("s")
+        elif path1[1] < path2[1]:
+            solution.append("n")
 
+        separator = ", "
+        final = separator.join(solution)
+    return final
+'''
 def getSuccessorState(current_state, successor_state):
-    if successorState == "South":
-        new_state = (currentState[0], currentState[1]-1)
-    elif successorState == "North":
-        new_state = (currentState[0], currentState[1]+1)
-    elif successorState == "West":
-        new_state = (currentState[0]-1, currentState[1])
-    elif successorState == "East":
-        new_state = (currentState[0]+1, currentState[1])
+    if successor_state == "South":
+        new_state = (current_state[0], current_state[1]-1)
+    elif successor_state == "North":
+        new_state = (current_state[0], current_state[1]+1)
+    elif successor_state == "West":
+        new_state = (current_state[0]-1, current_state[1])
+    elif successor_state == "East":
+        new_state = (current_state[0]+1, current_state[1])
     return new_state
+succ = getSuccessorState(current_node, problem.getSuccessors(current_node)[0][1])
+'''
 
 def tinyMazeSearch(problem):
     """
@@ -100,32 +118,53 @@ def depthFirstSearch(problem):
     """
 
     # find coordinates of initial state
-    now_state = problem.getStartState()
+    current_node = problem.getStartState()
 
-    # create matrix with all possible paths and fill with initial state
+    # create vector which will be filled with found path, initialize with first position coordinates
     paths = []
-    paths.append(now_state)
+    paths.append(current_node)
 
-    # set end node if now_state is the goal
-    if problem.isGoalState(now_state):
+    # set end node if current_node is the goal
+    if problem.isGoalState(current_node):
         pass
 
+    '''
     # check the number of successor branches
     number_of_successor_branches = len(problem.getSuccessors(now_state))
+    '''
+    i = True
+    while i == True:
+        # pick first successor and set as new now_state
+        next_node = problem.getSuccessors(current_node)[0][0]
 
-    # for each possible successor branch, append successor branch to its own branch
-    for i in range(number_of_successor_branches):
-        #paths = paths.copy()
-        #paths = np.hstack([paths, paths])
-        succ = getSuccessorState(now_state, problem.getSuccessors(now_state)[i][1])
-        paths.append((succ))
-        print(paths)
+        if next_node in paths:
+            if len(problem.getSuccessors(current_node)) == 2:
+                next_node = problem.getSuccessors(current_node)[1][0]
+                if next_node in paths:
+                    i = False
+            elif len(problem.getSuccessors(current_node)) == 3:
+                next_node = problem.getSuccessors(current_node)[1][0]
+                if next_node in paths:
+                    next_node = problem.getSuccessors(current_node)[2][0]
+                    if next_node in paths:
+                        i = False
+            else:
+                i = False
+        # if next node isn't already explored, append it to paths
+        paths.append(next_node)
+        current_node = next_node
 
+    print(paths)
+
+    winningPath = tanslateToDirections(paths)
+    print(winningPath)
     from game import Directions
+    n = Directions.NORTH
+    e = Directions.EAST
+    w = Directions.WEST
     s = Directions.SOUTH
 
-    #util.raiseNotDefined()
-    return [s, s]
+    return s, s, w, s, w, w, n, w, n, n, e, e, e, w
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
