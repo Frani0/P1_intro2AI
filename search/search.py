@@ -78,19 +78,49 @@ def tanslateToDirections(path):
         separator = ", "
         final = separator.join(solution)
     return final
-'''
-def getSuccessorState(current_state, successor_state):
-    if successor_state == "South":
-        new_state = (current_state[0], current_state[1]-1)
-    elif successor_state == "North":
-        new_state = (current_state[0], current_state[1]+1)
-    elif successor_state == "West":
-        new_state = (current_state[0]-1, current_state[1])
-    elif successor_state == "East":
-        new_state = (current_state[0]+1, current_state[1])
-    return new_state
-succ = getSuccessorState(current_node, problem.getSuccessors(current_node)[0][1])
-'''
+
+def discoverPath(problem, current_node, paths):
+    i = True
+    while i:
+        # pick first successor and set as the next node
+        next_node = problem.getSuccessors(current_node)[0][0]
+        # find number of successors
+        number_of_successors = len(problem.getSuccessors(current_node))
+        # check all the successors if they have been discovered
+        #TODO make it nicer!!
+        if next_node in paths:
+            if number_of_successors == 2:
+                next_node = problem.getSuccessors(current_node)[1][0]
+                if next_node in paths:
+                    i = False
+                    is_goal = False
+            elif number_of_successors == 3:
+                next_node = problem.getSuccessors(current_node)[1][0]
+                if next_node in paths:
+                    next_node = problem.getSuccessors(current_node)[2][0]
+                    if next_node in paths:
+                        i = False
+                        is_goal = False
+            elif number_of_successors == 4:
+                next_node = problem.getSuccessors(current_node)[1][0]
+                if next_node in paths:
+                    next_node = problem.getSuccessors(current_node)[2][0]
+                    if next_node in paths:
+                        next_node = problem.getSuccessors(current_node)[3][0]
+                        if next_node in paths:
+                            i = False
+                            is_goal = False
+            else:
+                i = False
+                is_goal = False
+        # if next node isn't already explored, append it to paths
+        paths.append(next_node)
+        current_node = next_node
+        if problem.isGoalState(current_node):
+            is_goal = True
+
+    return is_goal, paths
+
 
 def tinyMazeSearch(problem):
     """
@@ -128,36 +158,14 @@ def depthFirstSearch(problem):
     if problem.isGoalState(current_node):
         pass
 
-    '''
-    # check the number of successor branches
-    number_of_successor_branches = len(problem.getSuccessors(now_state))
-    '''
-    i = True
-    while i == True:
-        # pick first successor and set as new now_state
-        next_node = problem.getSuccessors(current_node)[0][0]
+    is_goal, paths = discoverPath(problem, current_node, paths)
 
-        if next_node in paths:
-            if len(problem.getSuccessors(current_node)) == 2:
-                next_node = problem.getSuccessors(current_node)[1][0]
-                if next_node in paths:
-                    i = False
-            elif len(problem.getSuccessors(current_node)) == 3:
-                next_node = problem.getSuccessors(current_node)[1][0]
-                if next_node in paths:
-                    next_node = problem.getSuccessors(current_node)[2][0]
-                    if next_node in paths:
-                        i = False
-            else:
-                i = False
-        # if next node isn't already explored, append it to paths
-        paths.append(next_node)
-        current_node = next_node
+    print(is_goal, paths)
 
-    print(paths)
+    if is_goal:
+        winningPath = tanslateToDirections(paths)
+        print(winningPath)
 
-    winningPath = tanslateToDirections(paths)
-    print(winningPath)
     from game import Directions
     n = Directions.NORTH
     e = Directions.EAST
