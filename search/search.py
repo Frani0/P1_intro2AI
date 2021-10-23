@@ -79,6 +79,7 @@ def tanslateToDirections(path):
         final = separator.join(solution)
     return final
 
+
 def discoverPath(problem, current_node, paths):
     i = True
     while i:
@@ -87,32 +88,18 @@ def discoverPath(problem, current_node, paths):
         # find number of successors
         number_of_successors = len(problem.getSuccessors(current_node))
         # check all the successors if they have been discovered
-        #TODO make it nicer!!
         if next_node in paths:
-            if number_of_successors == 2:
+            if number_of_successors == 0:
                 next_node = problem.getSuccessors(current_node)[1][0]
-                if next_node in paths:
-                    i = False
-                    is_goal = False
-            elif number_of_successors == 3:
-                next_node = problem.getSuccessors(current_node)[1][0]
-                if next_node in paths:
-                    next_node = problem.getSuccessors(current_node)[2][0]
+                i = False
+                is_goal = False
+            else:
+                for x in range(number_of_successors-1):
+                    next_node = problem.getSuccessors(current_node)[x+1][0]
                     if next_node in paths:
                         i = False
                         is_goal = False
-            elif number_of_successors == 4:
-                next_node = problem.getSuccessors(current_node)[1][0]
-                if next_node in paths:
-                    next_node = problem.getSuccessors(current_node)[2][0]
-                    if next_node in paths:
-                        next_node = problem.getSuccessors(current_node)[3][0]
-                        if next_node in paths:
-                            i = False
-                            is_goal = False
-            else:
-                i = False
-                is_goal = False
+
         # if next node isn't already explored, append it to paths
         paths.append(next_node)
         current_node = next_node
@@ -154,10 +141,6 @@ def depthFirstSearch(problem):
     paths = []
     paths.append(current_node)
 
-    # set end node if current_node is the goal
-    if problem.isGoalState(current_node):
-        pass
-
     is_goal, paths = discoverPath(problem, current_node, paths)
 
     print(is_goal, paths)
@@ -165,6 +148,8 @@ def depthFirstSearch(problem):
     if is_goal:
         winningPath = tanslateToDirections(paths)
         print(winningPath)
+    else:
+        pass
 
     from game import Directions
     n = Directions.NORTH
@@ -172,7 +157,7 @@ def depthFirstSearch(problem):
     w = Directions.WEST
     s = Directions.SOUTH
 
-    return s, s, w, s, w, w, n, w, n, n, e, e, e, w
+    return s, s
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
