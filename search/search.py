@@ -64,22 +64,20 @@ class SearchProblem:
         util.raiseNotDefined()
 
 def tanslateToDirections(path):
+    from game import Directions
     solution = []
     for i in range(len(path)-1):
         path1 = path[i]
         path2 = path[i+1]
         if path1[0] > path2[0]:
-            solution.append("w")
+            solution.append(Directions.WEST)
         elif path1[0] < path2[0]:
-            solution.append("e")
+            solution.append(Directions.EAST)
         elif path1[1] > path2[1]:
-            solution.append("s")
+            solution.append(Directions.SOUTH)
         elif path1[1] < path2[1]:
-            solution.append("n")
-
-        separator = ", "
-        final = separator.join(solution)
-    return final
+            solution.append(Directions.NORTH)
+    return solution
 
 
 def discoverPath(problem, current_node, path):
@@ -176,13 +174,8 @@ def depthFirstSearch(problem):
 
         is_goal, path = discoverPath(problem, new_next_node, path)
 
-    print(path)
     if is_goal:
         winning_path = tanslateToDirections(path)
-        print("winner", winning_path)
-
-    print(visited_nodes)
-
 
     from game import Directions
     n = Directions.NORTH
@@ -190,7 +183,7 @@ def depthFirstSearch(problem):
     w = Directions.WEST
     s = Directions.SOUTH
 
-    return s, s
+    return winning_path
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
