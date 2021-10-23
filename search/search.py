@@ -88,6 +88,8 @@ def discoverPath(problem, current_node, path):
             break
         # pick first successor and set as the next node
         next_node = problem.getSuccessors(current_node)[0][0]
+        #todo handle it when there's only 1 successor!!
+
         # find number of successors
         number_of_successors = len(problem.getSuccessors(current_node))
         # check all the successors if they have been discovered
@@ -152,36 +154,36 @@ def depthFirstSearch(problem):
     # call function to find a first path
     is_goal, path = discoverPath(problem, current_node, path)
 
-    # if we found the goal, return the path
-    if is_goal:
-        winning_path = tanslateToDirections(path)
-        print("winner", winning_path)
-    # if we didn't find the goal, repeat with new direction after last good node
-    else:
-        for i in range(len(path)):
-            number_of_successors = len(problem.getSuccessors(path[-1-i]))
-            if number_of_successors > 2:
-                last_good_node = path[-1-i]
-                break
-        index = path.index(last_good_node)
-        path = path[:index+1]
-        for i in range(number_of_successors):
-            if problem.getSuccessors(last_good_node)[i][0] not in visited_nodes:
-                new_next_node = problem.getSuccessors(last_good_node)[i][0]
-                path.append(new_next_node)
-                visited_nodes.append(new_next_node)
-                break
+    j = True
+    while j:
+        # if we found the goal, return the path
+        if is_goal:
+            winning_path = tanslateToDirections(path)
+            j = False
 
-        is_goal, path = discoverPath(problem, new_next_node, path)
+        # if we didn't find the goal, repeat with new direction after last good node
+        else:
+            good_node = False
+            for i in range(len(path)):
+                number_of_successors = len(problem.getSuccessors(path[-1-i]))
+                if number_of_successors > 2:
+                    last_good_node = path[-1-i]
+                    for j in range(number_of_successors):
+                        if problem.getSuccessors(last_good_node)[j][0] not in visited_nodes:
+                            good_node = True
+                    if good_node:
+                        break
+            index = path.index(last_good_node)
+            path = path[:index+1]
+            for i in range(number_of_successors):
+                if problem.getSuccessors(last_good_node)[i][0] not in visited_nodes:
+                    new_next_node = problem.getSuccessors(last_good_node)[i][0]
+                    path.append(new_next_node)
+                    visited_nodes.append(new_next_node)
+                    break
 
-    if is_goal:
-        winning_path = tanslateToDirections(path)
+            is_goal, path = discoverPath(problem, new_next_node, path)
 
-    from game import Directions
-    n = Directions.NORTH
-    e = Directions.EAST
-    w = Directions.WEST
-    s = Directions.SOUTH
 
     return winning_path
 
