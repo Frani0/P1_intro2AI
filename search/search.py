@@ -80,7 +80,7 @@ def tanslateToDirections(path):
     return solution
 
 
-def discoverPath(problem, current_node, path):
+def discoverPathDFS(problem, current_node, path):
     i = True
     while i:
         if problem.isGoalState(current_node):
@@ -88,7 +88,6 @@ def discoverPath(problem, current_node, path):
             break
         # pick first successor and set as the next node
         next_node = problem.getSuccessors(current_node)[0][0]
-        #todo handle it when there's only 1 successor!!
 
         # find number of successors
         number_of_successors = len(problem.getSuccessors(current_node))
@@ -116,6 +115,23 @@ def discoverPath(problem, current_node, path):
 
     return is_goal, path
 
+def discoverPathBFS(problem, current_node, path):
+    is_goal = False
+    number_successors = len(problem.getSuccessors(current_node))
+    for i in range(number_successors):
+        next_node = problem.getSuccessors(current_node)[i][0]
+        if next_node in visited_nodes:
+            pass
+        else:
+            path.push(next_node)
+            if problem.isGoalState(next_node):
+                is_goal = True
+                break
+            visited_nodes.append(next_node)
+    path.pop()
+
+    return is_goal, path
+
 
 def tinyMazeSearch(problem):
     """
@@ -125,22 +141,10 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem):
-    """
-    Search the deepest nodes in the search tree first.
-
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-    """
+    """Search the deepest nodes in the search tree first."""
     global visited_nodes
 
     # find coordinates of initial state
@@ -152,7 +156,7 @@ def depthFirstSearch(problem):
     visited_nodes.append(current_node)
 
     # call function to find a first path
-    is_goal, path = discoverPath(problem, current_node, path)
+    is_goal, path = discoverPathDFS(problem, current_node, path)
 
     j = True
     while j:
@@ -182,15 +186,43 @@ def depthFirstSearch(problem):
                     visited_nodes.append(new_next_node)
                     break
 
-            is_goal, path = discoverPath(problem, new_next_node, path)
+            is_goal, path = discoverPathDFS(problem, new_next_node, path)
 
 
     return winning_path
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    global visited_nodes
+
+    # find coordinates of initial state, find number of successors
+    fist_node = problem.getStartState()
+
+    # create vector which will be filled with found path, initialize with first position coordinates
+    path = util.Queue()
+    path.push(fist_node)
+
+    # create a list with all visited nodes
+    visited_nodes.append(fist_node)
+
+    # add successors to path, delete current_node from path
+    i = True
+    while i:
+        for j in range(len(path.list)):
+            current_node = path.list[-1]
+            is_goal, path = discoverPathBFS(problem, current_node, path)
+            if is_goal:
+                i = False
+            if path.isEmpty():
+                i = False
+
+    print(path.list)
+    print()
+
+    from game import Directions
+    w = Directions.WEST
+    return [w]
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
