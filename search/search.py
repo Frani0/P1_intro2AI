@@ -132,6 +132,40 @@ def discoverPathBFS(problem, current_node, path):
 
     return is_goal, path
 
+def findWinningPath(problem, current_node, visited_nodes, first_node):
+
+    # create list for winning path & fill it with last node
+    winning_path = []
+    winning_path.append(current_node)
+
+    k = True
+    while k:
+        successors = problem.getSuccessors(current_node)
+        # if there is only one successor, this one must be the parent node.
+        if len(successors) == 1:
+            current_node = successors[0][0]
+        else:
+            # find positions of successor nodes in visited nodes
+            nodes = []
+            index = []
+            for i in range(len(successors)):
+                if successors[i][0] in visited_nodes:
+                    nodes.append(successors[i][0])
+                    index.append(visited_nodes.index(successors[i][0]))
+            if len(nodes) == 1:
+                current_node = nodes[0]
+            # if more than one node has been visited, find one that comes earliest in visited nodes.
+            else:
+                index_max = min(index)
+                current_node = visited_nodes[index_max]
+
+        winning_path.append(current_node)
+        #if the next node is the first node, we are done finding the path
+        if current_node == first_node:
+            break
+
+    return winning_path
+
 
 def tinyMazeSearch(problem):
     """
@@ -197,14 +231,14 @@ def breadthFirstSearch(problem):
     global visited_nodes
 
     # find coordinates of initial state, find number of successors
-    fist_node = problem.getStartState()
+    first_node = problem.getStartState()
 
     # create vector which will be filled with found path, initialize with first position coordinates
     path = util.Queue()
-    path.push(fist_node)
+    path.push(first_node)
 
     # create a list with all visited nodes
-    visited_nodes.append(fist_node)
+    visited_nodes.append(first_node)
 
     # add successors to path, delete current_node from path
     i = True
@@ -217,12 +251,17 @@ def breadthFirstSearch(problem):
             if path.isEmpty():
                 i = False
 
-    print(path.list)
-    print()
+    # this is the coordinate of the goal
+    goal_coord = path.list[0]
 
-    from game import Directions
-    w = Directions.WEST
-    return [w]
+    # from list of visited nodes and goal coord, find the actual winning path
+    path = findWinningPath(problem, goal_coord, visited_nodes, first_node)
+    # since path is from goal to beginning, reverse
+    path.reverse()
+    # translate path to winning directions
+    winning_path = tanslateToDirections(path)
+
+    return winning_path
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
