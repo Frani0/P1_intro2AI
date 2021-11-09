@@ -132,7 +132,7 @@ def discoverPathBFS(problem, current_node, path):
 
     return is_goal, path
 
-def findWinningPath(problem, current_node, visited_nodes, first_node):
+def findWinningPathBFS(problem, current_node, visited_nodes, first_node):
 
     # create list for winning path & fill it with last node
     winning_path = []
@@ -152,6 +152,7 @@ def findWinningPath(problem, current_node, visited_nodes, first_node):
                 if successors[i][0] in visited_nodes:
                     nodes.append(successors[i][0])
                     index.append(visited_nodes.index(successors[i][0]))
+            # if only exactly one node has been visited, set this one as current node
             if len(nodes) == 1:
                 current_node = nodes[0]
             # if more than one node has been visited, find one that comes earliest in visited nodes.
@@ -163,6 +164,7 @@ def findWinningPath(problem, current_node, visited_nodes, first_node):
         #if the next node is the first node, we are done finding the path
         if current_node == first_node:
             break
+            k = False
 
     return winning_path
 
@@ -233,39 +235,75 @@ def breadthFirstSearch(problem):
     # find coordinates of initial state, find number of successors
     first_node = problem.getStartState()
 
-    # create vector which will be filled with found path, initialize with first position coordinates
-    path = util.Queue()
-    path.push(first_node)
+    # if the first node is the goal node, skip all code and return none
+    if problem.isGoalState(first_node):
+        return None
+    else:
+        # create vector which will be filled with found path, initialize with first position coordinates
+        path = util.Queue()
+        path.push(first_node)
 
-    # create a list with all visited nodes
-    visited_nodes.append(first_node)
+        # create a list with all visited nodes
+        visited_nodes.append(first_node)
 
-    # add successors to path, delete current_node from path
-    i = True
-    while i:
-        for j in range(len(path.list)):
-            current_node = path.list[-1]
-            is_goal, path = discoverPathBFS(problem, current_node, path)
-            if is_goal:
-                i = False
-            if path.isEmpty():
-                i = False
+        # add successors to path, delete current_node from path
+        i = True
+        while i:
+            for j in range(len(path.list)):
+                current_node = path.list[-1]
+                is_goal, path = discoverPathBFS(problem, current_node, path)
+                if is_goal:
+                    i = False
+                    break
+                if path.isEmpty():
+                    i = False
+                    break
 
-    # this is the coordinate of the goal
-    goal_coord = path.list[0]
+        # this is the coordinate of the goal
+        goal_coord = path.list[0]
+        # from list of visited nodes and goal coord, find the actual winning path
+        path = findWinningPathBFS(problem, goal_coord, visited_nodes, first_node)
+        # since path is from goal to beginning, reverse
+        path.reverse()
+        # translate path to winning directions
+        winning_path = tanslateToDirections(path)
 
-    # from list of visited nodes and goal coord, find the actual winning path
-    path = findWinningPath(problem, goal_coord, visited_nodes, first_node)
-    # since path is from goal to beginning, reverse
-    path.reverse()
-    # translate path to winning directions
-    winning_path = tanslateToDirections(path)
-
-    return winning_path
+        return winning_path
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
+
+    # Insert the root node into the priority queue (with priority 0)
+    priority_queue = util.PriorityQueue()
+    starting_node = problem.getStartState()
+    priority_queue.push(starting_node, 0)
+    # add children to priority queue
+    for i in range(len(problem.getSuccessors(starting_node))):
+        item = problem.getSuccessors(starting_node)[i][0]
+        priority = problem.getSuccessors(starting_node)[i][2]
+        priority_queue.push(item, priority)
+
+    # Repeat while the queue is not empty:
+    while not priority_queue.isEmpty():
+        # Remove the element with the highest priority
+        highest_priority = priority_queue.heap[0][0]
+        removed_item = priority_queue.pop()
+        # If the removed node is the destination, print total cost and stop the algorithm
+        if problem.isGoalState(removed_item):
+            print("total cost =", highest_priority)
+            break
+        # Else, enqueue all the children of the current node to the priority queue,
+        # with their cumulative cost from the root as priority
+        else:
+            for i in range(len(problem.getSuccessors(removed_item))):
+                item = problem.getSuccessors(removed_item)[i][0]
+                priority = problem.getSuccessors(removed_item)[i][2] + highest_priority
+                priority_queue.update(item, priority)
+
+        print(priority_queue.heap)
+
+
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
