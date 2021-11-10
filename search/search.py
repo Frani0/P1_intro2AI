@@ -132,11 +132,11 @@ def discoverPathBFS(problem, current_node, path):
 
     return is_goal, path
 
-def findWinningPathBFS(problem, current_node, visited_nodes, first_node):
+
+def findWinningPath(problem, current_node, visited_nodes, first_node):
 
     # create list for winning path & fill it with last node
-    winning_path = []
-    winning_path.append(current_node)
+    winning_path = [current_node]
 
     k = True
     while k:
@@ -156,9 +156,13 @@ def findWinningPathBFS(problem, current_node, visited_nodes, first_node):
             if len(nodes) == 1:
                 current_node = nodes[0]
             # if more than one node has been visited, find one that comes earliest in visited nodes.
-            else:
+            elif len(nodes) > 1:
                 index_max = min(index)
                 current_node = visited_nodes[index_max]
+            # if none of the nodes have been visited,
+            else:
+                print('??')
+                break
 
         winning_path.append(current_node)
         #if the next node is the first node, we are done finding the path
@@ -187,8 +191,7 @@ def depthFirstSearch(problem):
     current_node = problem.getStartState()
 
     # create vector which will be filled with found path, initialize with first position coordinates
-    path = []
-    path.append(current_node)
+    path = [current_node]
     visited_nodes.append(current_node)
 
     # call function to find a first path
@@ -262,7 +265,7 @@ def breadthFirstSearch(problem):
         # this is the coordinate of the goal
         goal_coord = path.list[0]
         # from list of visited nodes and goal coord, find the actual winning path
-        path = findWinningPathBFS(problem, goal_coord, visited_nodes, first_node)
+        path = findWinningPath(problem, goal_coord, visited_nodes, first_node)
         # since path is from goal to beginning, reverse
         path.reverse()
         # translate path to winning directions
@@ -273,14 +276,19 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
 
-    # Insert the root node into the priority queue (with priority 0)
+    priorities = []
+    # create priority queue and get starting node
     priority_queue = util.PriorityQueue()
     starting_node = problem.getStartState()
-    priority_queue.push(starting_node, 0)
+    # Insert the root node into the priority queue (with priority 0) add root to visited nodes
+    # priority_queue.push(starting_node, 0)
+    visited_nodes.append(starting_node)
+
     # add children to priority queue
-    for i in range(len(problem.getSuccessors(starting_node))):
-        item = problem.getSuccessors(starting_node)[i][0]
-        priority = problem.getSuccessors(starting_node)[i][2]
+    starting_info = problem.getSuccessors(starting_node)
+    for i in range(len(starting_info)):
+        item = starting_info[i][0]
+        priority = starting_info[i][2]
         priority_queue.push(item, priority)
 
     # Repeat while the queue is not empty:
@@ -288,23 +296,29 @@ def uniformCostSearch(problem):
         # Remove the element with the highest priority
         highest_priority = priority_queue.heap[0][0]
         removed_item = priority_queue.pop()
+        visited_nodes.append(removed_item)
         # If the removed node is the destination, print total cost and stop the algorithm
         if problem.isGoalState(removed_item):
-            print("total cost =", highest_priority)
             break
         # Else, enqueue all the children of the current node to the priority queue,
         # with their cumulative cost from the root as priority
         else:
-            for i in range(len(problem.getSuccessors(removed_item))):
-                item = problem.getSuccessors(removed_item)[i][0]
-                priority = problem.getSuccessors(removed_item)[i][2] + highest_priority
-                priority_queue.update(item, priority)
+            info = problem.getSuccessors(removed_item)
+            for i in range(len(info)):
+                item = info[i][0]
+                priority = info[i][2] + highest_priority
+                if item not in visited_nodes:
+                    priority_queue.update(item, priority)
 
-        print(priority_queue.heap)
+    # from list of visited nodes and goal coord, find the actual winning path
+    path = findWinningPath(problem, removed_item, visited_nodes, starting_node)
+    # since path is from goal to beginning, reverse
+    path.reverse()
+    # translate path to winning directions
+    winning_path = tanslateToDirections(path)
 
+    return winning_path
 
-
-    util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
     """
@@ -315,7 +329,9 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
+    # use uniform cost search but add heuristic function.
+    uniformCostSearch(problem)
+
     util.raiseNotDefined()
 
 
