@@ -18,8 +18,10 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+import heapq
 
 visited_nodes = []
+winning_path = []
 
 class SearchProblem:
     """
@@ -173,6 +175,28 @@ def findWinningPath(problem, current_node, visited_nodes, first_node):
     return winning_path
 
 
+def DFSRecursive(problem, nodes, current_node):
+    if problem.isGoalState(current_node):
+        print(nodes.list)
+        return nodes
+    else:
+        successors = problem.getSuccessors(current_node)
+        number_successors = len(successors)
+        for i in range(number_successors):
+            successor_coord, successor_direction, _ = successors[i]
+
+            for x in nodes.list:
+                if successor_coord == x[0]:
+                    a = True
+                    break
+                else:
+                    a = False
+            if not a:
+                nodes.push((successor_coord, successor_direction, current_node))
+                DFSRecursive(problem, nodes, nodes.list[-1][0])
+        return nodes
+
+
 def tinyMazeSearch(problem):
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -185,93 +209,60 @@ def tinyMazeSearch(problem):
 
 def depthFirstSearch(problem):
     """Search the deepest nodes in the search tree first."""
-    global visited_nodes
 
-    # find coordinates of initial state
-    current_node = problem.getStartState()
-
-    # create vector which will be filled with found path, initialize with first position coordinates
-    path = [current_node]
-    visited_nodes.append(current_node)
-
-    # call function to find a first path
-    is_goal, path = discoverPathDFS(problem, current_node, path)
-
-    j = True
-    while j:
-        # if we found the goal, return the path
-        if is_goal:
-            winning_path = tanslateToDirections(path)
-            j = False
-
-        # if we didn't find the goal, repeat with new direction after last good node
-        else:
-            good_node = False
-            for i in range(len(path)):
-                number_of_successors = len(problem.getSuccessors(path[-1-i]))
-                if number_of_successors > 2:
-                    last_good_node = path[-1-i]
-                    for j in range(number_of_successors):
-                        if problem.getSuccessors(last_good_node)[j][0] not in visited_nodes:
-                            good_node = True
-                    if good_node:
-                        break
-            index = path.index(last_good_node)
-            path = path[:index+1]
-            for i in range(number_of_successors):
-                if problem.getSuccessors(last_good_node)[i][0] not in visited_nodes:
-                    new_next_node = problem.getSuccessors(last_good_node)[i][0]
-                    path.append(new_next_node)
-                    visited_nodes.append(new_next_node)
+    # initialize a queue with the starting node
+    starting_node = problem.getStartState()
+    nodes = util.Stack()
+    nodes.push((starting_node, None, None))
+    # call recursive dfs function
+    nodes = DFSRecursive(problem, nodes, starting_node)
+    print(nodes.list)
+    # initialize path with goal direction
+    current_node = nodes.pop()
+    path = [current_node[1]]
+    # find parent of respective node and add its direction to list
+    b = True
+    while b:
+        for x in nodes.list:
+            # if the parent of current node is found
+            if x[0] == current_node[2]:
+                # append its direction to list
+                path.append(current_node[1])
+                # update current node to found parent
+                current_node = x
+                # if current node is the starting node, finish
+                if current_node[0] == starting_node:
+                    b = False
                     break
 
-            is_goal, path = discoverPathDFS(problem, new_next_node, path)
+    # reverse path to go from start to goal
+    path.reverse()
 
-
-    return winning_path
+    return path
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
 
-    global visited_nodes
-
     # find coordinates of initial state, find number of successors
-    first_node = problem.getStartState()
+    starting_node = problem.getStartState()
+    #initialize the queue with the starting node as first node
+    nodes = util.Queue
+    nodes.push((starting_node, None, None))
 
-    # if the first node is the goal node, skip all code and return none
-    if problem.isGoalState(first_node):
-        return None
-    else:
-        # create vector which will be filled with found path, initialize with first position coordinates
-        path = util.Queue()
-        path.push(first_node)
+    while nodes.notEmpty():
+        next = nodes.pop()
+        print(next)
+        #if next
+        #v :=Q.dequeue()
+        #if v is the goal then
+            #retunr v
+        #for all edges from v to w in adjacend edges do
+            # if w is not labeled as explored then
+                #labes w as explored
+                #q. enqueue
 
-        # create a list with all visited nodes
-        visited_nodes.append(first_node)
 
-        # add successors to path, delete current_node from path
-        i = True
-        while i:
-            for j in range(len(path.list)):
-                current_node = path.list[-1]
-                is_goal, path = discoverPathBFS(problem, current_node, path)
-                if is_goal:
-                    i = False
-                    break
-                if path.isEmpty():
-                    i = False
-                    break
-
-        # this is the coordinate of the goal
-        goal_coord = path.list[0]
-        # from list of visited nodes and goal coord, find the actual winning path
-        path = findWinningPath(problem, goal_coord, visited_nodes, first_node)
-        # since path is from goal to beginning, reverse
-        path.reverse()
-        # translate path to winning directions
-        winning_path = tanslateToDirections(path)
-
-        return winning_path
+    return None
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -316,7 +307,7 @@ def uniformCostSearch(problem):
     path.reverse()
     # translate path to winning directions
     winning_path = tanslateToDirections(path)
-
+    util.raiseNotDefined()
     return winning_path
 
 
