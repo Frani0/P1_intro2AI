@@ -243,24 +243,28 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
 
-    # find coordinates of initial state, find number of successors
+    # find coordinates of root node,
     starting_node = problem.getStartState()
-    #initialize the queue with the starting node as first node
-    nodes = util.Queue
-    nodes.push((starting_node, None, None))
-
-    while nodes.notEmpty():
-        next = nodes.pop()
-        print(next)
-        #if next
-        #v :=Q.dequeue()
-        #if v is the goal then
-            #retunr v
-        #for all edges from v to w in adjacend edges do
-            # if w is not labeled as explored then
-                #labes w as explored
-                #q. enqueue
-
+    # initialize the queue with the starting node as first node
+    queue = util.Queue()
+    queue.push((starting_node, None, None))
+    # mark root node as explored
+    explored_nodes = [starting_node]
+    while not queue.isEmpty():
+        action, popped_node = queue.pop()
+        print(action)
+        successors = problem.getSuccessors(popped_node[0])
+        number_successors = len(successors)
+        if problem.isGoalState(popped_node[0]):
+            print("final", popped_node)
+        for i in range(number_successors):
+            next_node = successors[i]
+            print("next node", next_node)
+            successor_coord = next_node[0]
+            if successor_coord not in explored_nodes:
+                explored_nodes.append(successor_coord)
+                nodes.push(successor_coord)
+        print(nodes.list)
 
     return None
 
