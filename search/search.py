@@ -80,12 +80,14 @@ def depthFirstSearch(problem):
     starting_node = problem.getStartState()
     # create empty list with visited nodes
     visited_nodes = []
-    # initialize the stack with the starting node as first node
+    # initialize the stack with the starting node as first node & empty list for path
+    # the path will be linked to the corresponding node so if we take a wrong turn and have to go back
+    # the path will be "overwritten"
     stack = util.Stack()
     stack.push((starting_node, []))
     # as long as the stack is not empty
     while not stack.isEmpty():
-        # pop the last entry
+        # pop the last entry with its corresponding path
         (popped_node, path) = stack.pop()
         # if the popped node is the goal, break
         if problem.isGoalState(popped_node):
@@ -102,7 +104,6 @@ def depthFirstSearch(problem):
             if successor_coord not in visited_nodes:
                 # add the node to the stack and add direction to path
                 stack.push((successor_coord, path + [successor_direction]))
-
     return path
 
 def breadthFirstSearch(problem):
@@ -112,10 +113,10 @@ def breadthFirstSearch(problem):
     starting_node = problem.getStartState()
     # create list with visited nodes, fill with starting node
     visited_nodes = [starting_node]
-    # initialize the queue with the starting node as first node
+    # initialize the queue with the starting node as first node & empty list for path
     queue = util.Queue()
     queue.push((starting_node, []))
-    # as long as the stack is not empty
+    # as long as the queue is not empty
     while not queue.isEmpty():
         # pop the last entry
         (popped_node, path) = queue.pop()
@@ -134,7 +135,6 @@ def breadthFirstSearch(problem):
                 visited_nodes.append(successor_coord)
                 # add the node to the stack and add direction to path
                 queue.push((successor_coord, path + [successor_direction]))
-
     return path
 
 def uniformCostSearch(problem):
@@ -144,18 +144,21 @@ def uniformCostSearch(problem):
     starting_node = problem.getStartState()
     # create empty list with visited nodes
     visited_nodes = []
-    # initialize the queue with the starting node as first node. add priority of 0
+    # initialize the priority queue with the starting node as first node  & empty list for path
+    # Cost and priority are 0 since it's the starting node
     queue = util.PriorityQueue()
     queue.push((starting_node, []), 0)
-    # as long as the stack is not empty
+    # as long as the priority queue is not empty
     while not queue.isEmpty():
         # pop the last entry
         (popped_node, path) = queue.pop()
-        # if the successor node is the goal, return the path
-        if problem.isGoalState(popped_node):
-            return path
         # if the popped node has not been visited yet
         if popped_node not in visited_nodes:
+            # add the successor to visited nodes
+            visited_nodes.append(popped_node)
+            # if the successor node is the goal, return the path
+            if problem.isGoalState(popped_node):
+                return path
             # get successors
             successors = problem.getSuccessors(popped_node)
             # for all the successor nodes
@@ -164,16 +167,12 @@ def uniformCostSearch(problem):
                 successor_direction = i[1]
                 # the successor has not been visited before
                 if successor_coord not in visited_nodes:
-                    # uppdate the path
-                    path = path + [successor_direction]
+                    # update the path
+                    new_path = path + [successor_direction]
                     # calculate cost of path
-                    cost = problem.getCostOfActions(path)
+                    cost = problem.getCostOfActions(new_path)
                     # add the node,its  path and cost of path into queue
-                    queue.push((successor_coord, path), cost)
-            # add the successor to visited nodes
-            visited_nodes.append(successor_coord)
-
-            return path
+                    queue.push((successor_coord, new_path), cost)
 
 
 def nullHeuristic(state, problem=None):
@@ -185,10 +184,44 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    # use uniform cost search but add heuristic function.
-    uniformCostSearch(problem)
 
-    util.raiseNotDefined()
+    # find coordinates of root node,
+    starting_node = problem.getStartState()
+    # create empty list with visited nodes
+    visited_nodes = []
+    # initialize the priority queue with the starting node as first node  & empty list for path
+    # Cost and priority are 0 since it's the starting node
+    queue = util.PriorityQueue()
+    queue.push((starting_node, []), 0)
+    # as long as the priority queue is not empty
+    while not queue.isEmpty():
+        # pop the last entry
+        (popped_node, path) = queue.pop()
+        # if the popped node has not been visited yet
+        if popped_node not in visited_nodes:
+            # add the successor to visited nodes
+            visited_nodes.append(popped_node)
+            # if the successor node is the goal, return the path
+            if problem.isGoalState(popped_node):
+                return path
+            # get successors
+            successors = problem.getSuccessors(popped_node)
+            # for all the successor nodes
+            for i in successors:
+                successor_coord = i[0]
+                successor_direction = i[1]
+                # the successor has not been visited before
+                if successor_coord not in visited_nodes:
+                    # update the path
+                    new_path = path + [successor_direction]
+                    # calculate cost backward path (same as ucs)
+                    backward_cost = problem.getCostOfActions(new_path)
+                    # calculate forward cost (according to heuristic function)
+                    forward_cost = heuristic(successor_coord, problem)
+                    # add both cost for total cost
+                    total_cost = backward_cost + forward_cost
+                    # add the node, its path and cost of path into queue
+                    queue.push((successor_coord, new_path), total_cost)
 
 
 # Abbreviations
