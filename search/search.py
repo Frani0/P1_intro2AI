@@ -137,7 +137,6 @@ def breadthFirstSearch(problem):
                 new_path = path + [successor_direction]
                 # add the successor to visited nodes
                 visited_nodes.append(successor_coord)
-                print("visited nodes", visited_nodes)
                 # add the node to the stack and add direction to path
                 queue.push((successor_coord, new_path))
     return path

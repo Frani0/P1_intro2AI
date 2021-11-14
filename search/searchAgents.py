@@ -280,7 +280,7 @@ class CornersProblem(search.SearchProblem):
         self.walls = startingGameState.getWalls()
         self.startingPosition = startingGameState.getPacmanPosition()
         top, right = self.walls.height-2, self.walls.width-2
-        self.corners = [(1,1), (1,top), (right, 1), (right, top)]
+        self.corners = [(1, 1), (1, top), (right, 1), (right, top)]
         for corner in self.corners:
             if not startingGameState.hasFood(*corner):
                 print('Warning: no food in corner ' + str(corner))
@@ -296,19 +296,18 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        start = [self.startingPosition] + [0]
+        # give the coordinates plus layer to store corners
+        start = (self.startingPosition, [])
         return start
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
+        [[_,_], found_corners] = state
+        # check if all the corners have been found
+        isGoal = all(elem in found_corners for elem in self.corners)
 
-        isGoal = (len(self.corners) == 1 and [state[0]] == self.corners)
-
-
-        if isGoal:
-            print("win")
         # For display purposes only
         if isGoal and self.visualize:
             self._visitedlist.append(state[0])
@@ -331,21 +330,19 @@ class CornersProblem(search.SearchProblem):
         """
         successors = []
 
-        i = 0
-        for a in self.corners:
-            if a in self._visitedlist:
-                self.corners.remove(a)
-                i = i + 1
-
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            [[x,y], _] = state
+            [[x,y], found_corners] = state
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             if not self.walls[nextx][nexty]:
-                nextState = [(nextx, nexty), i]
+                # check if the next state is a corner stat that hasn't been found before
+                if (nextx, nexty) in self.corners and (nextx, nexty) not in found_corners:
+                    # if so, add it to teh found corners
+                    found_corners = found_corners + [(nextx, nexty)]
+                # append the next state with found corners, cost and action
+                nextState = [(nextx, nexty), found_corners]
                 cost = self.costFn(nextState)
                 successors.append((nextState, action, cost))
-                print("next state", nextState)
 
         # Bookkeeping for display purposes
         self._expanded += 1 # DO NOT CHANGE
@@ -360,12 +357,14 @@ class CornersProblem(search.SearchProblem):
         Returns the cost of a particular sequence of actions.  If those actions
         include an illegal move, return 999999.  This is implemented for you.
         """
-        if actions == None: return 999999
-        x,y= self.startingPosition
+        if actions == None:
+            return 999999
+        x, y = self.startingPosition
         for action in actions:
             dx, dy = Actions.directionToVector(action)
             x, y = int(x + dx), int(y + dy)
-            if self.walls[x][y]: return 999999
+            if self.walls[x][y]:
+                return 999999
         return len(actions)
 
 
@@ -384,9 +383,25 @@ def cornersHeuristic(state, problem):
     """
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    distances = []
+    distance_to_corners = 0
+    for corner in corners:
+        if corner not in state[1]:
+            corner_x, corner_y = corner
+            state_x, state_y = state[0]
+            dist = ((corner_x-state_x)**2 + (corner_y-state_y)**2)**0.5
+            distances.append(dist)
 
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    if len(distances) == 4:
+        distance_to_corners = sum(distances)/2
+    if 4 > len(distances) > 0:
+        distance_to_corners = sum(distances)/2
+        #minimal_distance = min(distances)
+        #distance_to_corners = minimal_distance/distance_to_corners
+        #print("old dist", distance_to_corners)
+        #distance_to_corners = distance_to_corners / 100
+    #print("distance to corners", distance_to_corners)
+    return distance_to_corners # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
