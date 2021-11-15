@@ -176,7 +176,7 @@ def uniformCostSearch(problem):
                     # calculate cost of path
                     cost = problem.getCostOfActions(new_path)
                     # add the node,its  path and cost of path into queue
-                    queue.push((successor_coord, new_path), cost)
+                    queue.update((successor_coord, new_path), cost)
 
 
 def nullHeuristic(state, problem=None):
@@ -201,6 +201,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     while not queue.isEmpty():
         # pop the last entry
         (popped_node, path) = queue.pop()
+        print(popped_node)
         # if the popped node has not been visited yet
         if popped_node not in visited_nodes:
             # add the successor to visited nodes
@@ -225,7 +226,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                     # add both cost for total cost
                     total_cost = backward_cost + forward_cost
                     # add the node, its path and cost of path into queue
-                    queue.push((successor_coord, new_path), total_cost)
+
+                    queue.update((successor_coord, new_path), total_cost)
 
 
 # Abbreviations

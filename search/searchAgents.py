@@ -383,25 +383,43 @@ def cornersHeuristic(state, problem):
     """
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-    distances = []
-    distance_to_corners = 0
+    # find dimensions
+    top, right = walls.height - 3, walls.width - 3
+    # initialize list for distances & corners as well as the total distance
+    dists_and_corners = []
+    total_distance = 0
+    # x and y coordinates of the current state
+    state_x, state_y = state[0]
+    # for all the corners, check if it has been found.
+    # if not, find manhattan distance from current state to corner. append to dists_and_corners (with the corner coord)
     for corner in corners:
         if corner not in state[1]:
             corner_x, corner_y = corner
-            state_x, state_y = state[0]
-            dist = ((corner_x-state_x)**2 + (corner_y-state_y)**2)**0.5
-            distances.append(dist)
+            dist_and_corner = [(abs(corner_x-state_x) + abs(corner_y-state_y)), corner]
+            dists_and_corners.append(dist_and_corner)
 
-    if len(distances) == 4:
-        distance_to_corners = sum(distances)/2
-    if 4 > len(distances) > 0:
-        distance_to_corners = sum(distances)/2
-        #minimal_distance = min(distances)
-        #distance_to_corners = minimal_distance/distance_to_corners
-        #print("old dist", distance_to_corners)
-        #distance_to_corners = distance_to_corners / 100
-    #print("distance to corners", distance_to_corners)
-    return distance_to_corners # Default to trivial solution
+    # if 4 corners haven't been found yet, take distance to closest corner.
+    # add twice the height plus once the width of the field
+    if len(dists_and_corners) == 4:
+        closest_corner = min(dists_and_corners)
+        total_distance = closest_corner[0] + 2*top + right
+    # if 3 corners haven't been found yet, take distance to closest corner.
+    # add the height and the width of the field
+    elif len(dists_and_corners) == 3:
+        closest_corner = min(dists_and_corners)
+        total_distance = closest_corner[0] + top + right
+    # if 2 corners haven't been found yet, take distance to closest corner.
+    # add the manhattan distance of the 2 corners
+    elif len(dists_and_corners) == 2:
+        closest_corner = min(dists_and_corners)
+        corner1_x, corner1_y = dists_and_corners[0][1]
+        corner2_x, corner2_y = dists_and_corners[1][1]
+        total_distance = closest_corner[0] + abs(corner1_x-corner2_x) + abs(corner1_y-corner2_y)
+    # if only one corner hasen't been found yet, take distance to closest corner.
+    elif len(dists_and_corners) == 1:
+        total_distance = dists_and_corners[0][0]
+
+    return total_distance
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -520,13 +538,10 @@ class ClosestDotSearchAgent(SearchAgent):
         gameState.
         """
         # Here are some useful elements of the startState
-        startPosition = gameState.getPacmanPosition()
-        food = gameState.getFood()
-        walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        path = search.uniformCostSearch(problem)
+        return path
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -560,9 +575,11 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x,y = state
+        if self.food[x][y]:
+            return True
+        else:
+            return False
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
 
 def mazeDistance(point1, point2, gameState):
     """
