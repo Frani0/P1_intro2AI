@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.3.21)  15 NOV 2021 20:13
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.3.21)  16 NOV 2021 16:30
 entering extended mode
 **./Exercise-1.tex
 (Exercise-1.tex
@@ -661,10 +661,10 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 <p1_1.PNG, id=1, 178.266pt x 203.5605pt>
 File: p1_1.PNG Graphic file (type png)
 <use p1_1.PNG>
-Package pdftex.def Info: p1_1.PNG  used on input line 79.
+Package pdftex.def Info: p1_1.PNG  used on input line 76.
 (pdftex.def)             Requested size: 99.58464pt x 113.71976pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 84--85
+Underfull \hbox (badness 10000) in paragraph at lines 81--82
 
  []
 
@@ -673,38 +673,73 @@ Underfull \hbox (badness 10000) in paragraph at lines 84--85
 sty"
 File: lstlang1.sty 2020/03/24 1.8d listings language file
 )
-Overfull \hbox (3.03232pt too wide) in paragraph at lines 90--91
+Overfull \hbox (3.03232pt too wide) in paragraph at lines 87--88
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
 ][][][][][][] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 109--120
+Underfull \hbox (badness 10000) in paragraph at lines 104--105
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 106--118
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 106--118
 
  []
 
 [1
 
 {C:/Users/franz/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map} <./p1_1.PNG>
-] [2] (Exercise-1.aux) ) 
+]
+Overfull \hbox (25.5852pt too wide) in paragraph at lines 131--132
+[][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (0.38525pt too wide) in paragraph at lines 133--134
+[][][][][][][][][][][][][][][][] 
+ []
+
+<p8.PNG, id=11, 98.769pt x 100.57574pt>
+File: p8.PNG Graphic file (type png)
+<use p8.PNG>
+Package pdftex.def Info: p8.PNG  used on input line 150.
+(pdftex.def)             Requested size: 99.58464pt x 101.4088pt.
+
+Underfull \hbox (badness 4366) in paragraph at lines 151--151
+[]\OT1/cmr/m/n/10 Figure 2: Ex-am-ple
+ []
+
+
+Underfull \hbox (badness 1163) in paragraph at lines 151--151
+\OT1/cmr/m/n/10 of sub-op-ti-mal greedy
+ []
+
+[2 <./p8.PNG>] (Exercise-1.aux) ) 
 Here is how much of TeX's memory you used:
- 6030 strings out of 493305
- 80120 string characters out of 3129802
- 437976 words of memory out of 3000000
- 9489 multiletter control sequences out of 15000+200000
+ 6043 strings out of 493305
+ 80359 string characters out of 3129802
+ 436957 words of memory out of 3000000
+ 9501 multiletter control sequences out of 15000+200000
  11056 words of font info for 44 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 41i,6n,49p,604b,1267s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Users/franz/AppData/Local/Programs/MiKTeX 2.9/fonts
-/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/franz/AppData/Local/Programs/MiK
-TeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/franz/AppData/Local/
-Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/franz/Ap
-pData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Us
-ers/franz/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt
-10.pfb>
-Output written on Exercise-1.pdf (2 pages, 89434 bytes).
+ 41i,6n,49p,515b,1267s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/Users/franz/AppData/Local/Programs/MiKTeX 
+2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/franz/AppData/Local/Pro
+grams/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/franz/AppDa
+ta/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users
+/franz/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.p
+fb><C:/Users/franz/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfont
+s/cm/cmtt10.pfb>
+Output written on Exercise-1.pdf (2 pages, 96000 bytes).
 PDF statistics:
- 30 PDF objects out of 1000 (max. 8388607)
+ 31 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 11 words of extra memory for PDF output out of 10000 (max. 10000000)
 

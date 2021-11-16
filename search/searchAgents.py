@@ -397,7 +397,6 @@ def cornersHeuristic(state, problem):
             corner_x, corner_y = corner
             dist_and_corner = [(abs(corner_x-state_x) + abs(corner_y-state_y)), corner]
             dists_and_corners.append(dist_and_corner)
-
     # if 4 corners haven't been found yet, take distance to closest corner.
     # add twice the height plus once the width of the field
     if len(dists_and_corners) == 4:
@@ -511,9 +510,58 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
+
+    walls = problem.walls
+    top, right = walls.height - 2, walls.width - 2
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+
+    south_west = 0.1
+    for x in range(position[0]-1):
+            for y in range(position[1]-1):
+                if foodGrid[x][y]:
+                    south_west += 0.1
+                if walls[x][y]:
+                    south_west += 0.1
+
+    south_east = 0.1
+    if position[0] == right:
+        pass
+    else:
+        for x in range(position[0], right):
+                for y in range(position[1]-1):
+                    if foodGrid[x][y]:
+                        south_east += 0.1
+                    if walls[x][y]:
+                        south_east += 0.1
+
+    norht_west = 0.1
+    if position[1] == top:
+        pass
+    else:
+        for x in range(position[0]-1):
+                for y in range(position[1], top):
+                    if foodGrid[x][y]:
+                        norht_west += 0.1
+                    if walls[x][y]:
+                        norht_west += 0.1
+
+    north_east = 0.1
+    if position[0] == right and position[0] == top:
+        pass
+    else:
+        for x in range(position[0], right):
+                for y in range(position[1], top):
+                    if foodGrid[x][y]:
+                        south_east += 0.1
+                    if walls[x][y]:
+                        south_east += 0.1
+
+    total_foods = south_west + south_east + norht_west + north_east
+
+    if problem.isGoalState(state):
+        total_foods = 0
+
+    return total_foods
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -539,7 +587,6 @@ class ClosestDotSearchAgent(SearchAgent):
         """
         # Here are some useful elements of the startState
         problem = AnyFoodSearchProblem(gameState)
-
         path = search.uniformCostSearch(problem)
         return path
 
